@@ -1,9 +1,16 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import Image from "next/image";
+import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from "motion/react";
+import { ChevronDown } from "lucide-react";
 import { project, unitConfigs, priceDisclaimer } from "@/content/site-config";
-import { HillLine, BuildingSilhouette, TreeLine } from "@/components/illustrations/elevation-scene";
+import { MagneticCTA } from "@/components/ui/magnetic-cta";
+import { Separator } from "@/components/ui/separator";
+
+const HERO_IMAGE = "/images/serenity-exterior-dusk.jpg";
+const HERO_IMAGE_ALT =
+  "Architectural render of Malhar Serenity at dusk, showing the building's brick-and-glass facade lit from within";
 
 const stats = [
   { label: "Residences", value: String(project.totalUnits) },
@@ -16,14 +23,6 @@ const stats = [
   { label: "Starting price", value: unitConfigs[0].priceINR, accent: true },
 ];
 
-/**
- * Manual clamped lerp, used instead of useTransform's array-range shorthand.
- * The shorthand form was observed to un-clamp and rebound past its range
- * (verified against a production build via scripted scroll — likely a
- * native-ScrollTimeline offload quirk in this Motion version for some
- * properties). The function form always computes on the JS thread, which
- * clamps correctly.
- */
 function clampedLerp(t: number, inMin: number, inMax: number, outMin: number, outMax: number) {
   const p = Math.min(Math.max((t - inMin) / (inMax - inMin), 0), 1);
   return outMin + p * (outMax - outMin);
@@ -31,89 +30,84 @@ function clampedLerp(t: number, inMin: number, inMax: number, outMin: number, ou
 
 function HeroStats() {
   return (
-    <dl className="flex flex-wrap items-baseline justify-center gap-x-7 gap-y-3">
-      {stats.map((stat) => (
-        <div key={stat.label} className="flex flex-col items-center">
-          <dt className="text-[10px] uppercase tracking-wide text-stone-strong">{stat.label}</dt>
-          <dd className={`font-mono text-base ${stat.accent ? "text-turmeric-strong" : "text-canopy"}`}>
-            {stat.value}
-          </dd>
+    <dl className="flex flex-wrap items-center justify-center gap-x-6 gap-y-4 sm:gap-x-0">
+      {stats.map((stat, i) => (
+        <div key={stat.label} className="flex items-center">
+          {i > 0 && <Separator orientation="vertical" className="mx-5 hidden h-8 bg-mist/20 sm:block" />}
+          <div className="flex flex-col items-center">
+            <dt className="text-[10px] uppercase tracking-[0.15em] text-mist/60">{stat.label}</dt>
+            <dd className={`font-mono text-base ${stat.accent ? "text-turmeric" : "text-mist"}`}>
+              {stat.value}
+            </dd>
+          </div>
         </div>
       ))}
     </dl>
   );
 }
 
-function HeroCTAs() {
+function HeroCopy() {
   return (
-    <div className="flex flex-col items-center gap-3 sm:flex-row">
-      <a
-        href="#enquiry"
-        className="rounded-md bg-canopy px-7 py-3 font-sans text-sm font-medium text-mist transition-colors hover:bg-canopy/90"
+    <>
+      <p className="font-mono text-xs uppercase tracking-[0.3em] text-mist/70">
+        {project.location.line1}, {project.location.line2}
+      </p>
+      <h1 className="max-w-4xl font-display text-6xl leading-[1.05] text-mist sm:text-7xl md:text-8xl">
+        Fourteen homes.
+        <br />
+        One hillside.
+      </h1>
+      <p className="max-w-xl text-lg leading-relaxed text-mist/80">
+        A boutique address of 3&nbsp;BHK residences on Baner&rsquo;s high ground —
+        built small on purpose, so every home keeps its view, its quiet, and
+        its distance from the next door.
+      </p>
+      <div className="flex flex-col items-center gap-4 pt-2 sm:flex-row">
+        <MagneticCTA href="#enquiry" variant="brand-accent" size="pill">
+          Enquire Now
+        </MagneticCTA>
+        <MagneticCTA href="/residences" variant="brand-ghost" size="pill">
+          Explore Residences
+        </MagneticCTA>
+      </div>
+      <div className="pt-6">
+        <HeroStats />
+      </div>
+      <p className="max-w-md pt-2 text-xs text-mist/50">{priceDisclaimer}</p>
+    </>
+  );
+}
+
+function ScrollIndicator({ opacity }: { opacity: MotionValue<number> }) {
+  return (
+    <motion.div
+      style={{ opacity }}
+      className="absolute inset-x-0 bottom-8 z-10 flex flex-col items-center gap-2"
+    >
+      <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-mist/60">Scroll</span>
+      <motion.div
+        animate={{ y: [0, 6, 0] }}
+        transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
       >
-        Enquire Now
-      </a>
-      <button
-        type="button"
-        disabled
-        title="Brochure not yet available — TODO: swap in real PDF"
-        className="cursor-not-allowed rounded-md border border-stone/50 px-7 py-3 font-sans text-sm font-medium text-basalt/50"
-      >
-        Download Brochure
-      </button>
-    </div>
+        <ChevronDown className="h-4 w-4 text-mist/60" aria-hidden="true" />
+      </motion.div>
+    </motion.div>
   );
 }
 
 /**
- * Reduced-motion path: plain elements only, no `motion.*` anywhere. A
- * `motion.*` element whose `initial`/`animate`/`style` props toggle between
- * an object and `undefined` mid-lifecycle does not reliably snap back to
- * its natural CSS state — verified via emulateMedia + a production build:
- * the hero stayed stuck near opacity 0 indefinitely. Rendering an entirely
- * different, motion-free tree instead (matching the pattern already used
- * in Reveal) sidesteps that failure mode by construction.
- */
-/**
- * The scroll-driven reveal narrative (hill → building → tree layers
- * parallaxing into view) doesn't apply without scroll, so this doesn't
- * try to reproduce it statically — a plain hero with a quiet hill-line
- * footer nod is enough. Content and decoration are plain siblings in
- * normal document flow here, not absolutely-positioned overlap, so
- * there's no risk of the sort of collision the layered scroll version
- * has to actively manage with opacity timing.
+ * Reduced-motion path: no `motion.*` at all, matching the pattern proven
+ * safe in the animated version's own history — a motion element whose
+ * animate/style props toggle between an object and `undefined` mid-
+ * lifecycle does not reliably reset to a natural CSS state.
  */
 function StaticHero() {
   return (
-    <section className="relative overflow-hidden">
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(180deg, color-mix(in srgb, var(--dusk) 10%, var(--mist)) 0%, var(--mist) 65%)",
-        }}
-      />
-      <div className="relative z-10 flex flex-col items-center gap-8 px-6 py-24 text-center">
-        <p className="font-mono text-xs uppercase tracking-[0.2em] text-stone-strong">
-          {project.location.line1}, {project.location.line2}
-        </p>
-        <h1 className="max-w-3xl font-display text-5xl leading-[1.1] text-basalt sm:text-6xl md:text-7xl">
-          Fourteen homes.
-          <br />
-          One hillside.
-        </h1>
-        <p className="max-w-lg text-lg leading-relaxed text-basalt/80">
-          Malhar Serenity is a boutique address of 3 BHK residences on
-          Baner&rsquo;s high ground — built small on purpose, so every
-          home keeps its view, its quiet, and its distance from the next
-          door.
-        </p>
-        <HeroStats />
-        <HeroCTAs />
-        <p className="max-w-md text-xs text-stone-strong">{priceDisclaimer}</p>
-      </div>
-      <div className="relative h-32 sm:h-48">
-        <HillLine className="h-full w-full" />
+    <section className="relative flex min-h-svh flex-col justify-end overflow-hidden">
+      <Image src={HERO_IMAGE} alt={HERO_IMAGE_ALT} fill priority sizes="100vw" className="object-cover" />
+      <div className="absolute inset-0 bg-gradient-to-t from-basalt via-basalt/70 to-basalt/25" />
+      <div className="relative z-10 flex flex-col items-center gap-6 px-6 pt-28 pb-20 text-center sm:pt-40 sm:pb-28">
+        <HeroCopy />
       </div>
     </section>
   );
@@ -121,107 +115,96 @@ function StaticHero() {
 
 function ScrollHero() {
   const sceneRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: sceneRef,
-    offset: ["start start", "end end"],
-  });
+  const { scrollYProgress } = useScroll({ target: sceneRef, offset: ["start start", "end start"] });
 
-  const hillY = useTransform(scrollYProgress, (v) => clampedLerp(v, 0, 1, 0, -60));
-  const buildingY = useTransform(scrollYProgress, (v) => clampedLerp(v, 0, 1, 30, -140));
-  const buildingOpacity = useTransform(scrollYProgress, (v) => {
-    if (v < 0.15) return clampedLerp(v, 0, 0.15, 0, 1);
-    return 1;
-  });
-  const treeY = useTransform(scrollYProgress, (v) => clampedLerp(v, 0, 1, 0, 220));
-  const contentOpacity = useTransform(scrollYProgress, (v) => clampedLerp(v, 0, 0.35, 1, 0));
-  const contentY = useTransform(scrollYProgress, (v) => clampedLerp(v, 0, 0.35, 0, -40));
+  const imageY = useTransform(scrollYProgress, (v) => clampedLerp(v, 0, 1, 0, 140));
+  const contentOpacity = useTransform(scrollYProgress, (v) => clampedLerp(v, 0, 0.6, 1, 0));
+  const contentY = useTransform(scrollYProgress, (v) => clampedLerp(v, 0, 0.6, 0, -50));
+  const indicatorOpacity = useTransform(scrollYProgress, (v) => clampedLerp(v, 0, 0.15, 1, 0));
 
   return (
-    <section ref={sceneRef} className="relative h-[170vh]">
-      <div className="sticky top-0 h-svh overflow-hidden">
-        {/* Sky */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(180deg, color-mix(in srgb, var(--dusk) 10%, var(--mist)) 0%, var(--mist) 65%)",
-          }}
-        />
+    <section ref={sceneRef} className="relative min-h-svh overflow-hidden">
+      <motion.div
+        className="absolute inset-0"
+        style={{ y: imageY }}
+        initial={{ scale: 1.14, opacity: 0 }}
+        animate={{ scale: 1.06, opacity: 1 }}
+        transition={{ duration: 1.8, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <Image src={HERO_IMAGE} alt={HERO_IMAGE_ALT} fill priority sizes="100vw" className="object-cover" />
+      </motion.div>
 
-        {/* Hill line */}
-        <motion.div style={{ y: hillY }} className="absolute inset-x-0 bottom-0 h-[45%]">
-          <HillLine className="h-full w-full" />
-        </motion.div>
+      <div className="absolute inset-0 bg-gradient-to-t from-basalt via-basalt/65 to-basalt/20" />
 
-        {/* Building silhouette */}
-        <motion.div
-          style={{ y: buildingY, opacity: buildingOpacity }}
-          className="absolute inset-x-0 bottom-[8%] flex justify-center px-6"
+      <motion.div
+        style={{ opacity: contentOpacity, y: contentY }}
+        className="relative z-10 flex h-full flex-col items-center justify-end gap-6 px-6 pt-28 pb-20 text-center sm:pt-40 sm:pb-28"
+      >
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          className="font-mono text-xs uppercase tracking-[0.3em] text-mist/70"
         >
-          <BuildingSilhouette className="h-40 w-full max-w-xl sm:h-56" />
-        </motion.div>
+          {project.location.line1}, {project.location.line2}
+        </motion.p>
 
-        {/* Foreground tree line */}
-        <motion.div style={{ y: treeY }} className="absolute inset-x-0 bottom-0 h-[18%]">
-          <TreeLine className="h-full w-full" />
-        </motion.div>
-
-        {/* Hero content */}
-        <motion.div
-          style={{ opacity: contentOpacity, y: contentY }}
-          className="relative z-10 flex h-full flex-col items-center justify-center gap-8 px-6 text-center"
+        <motion.h1
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+          className="max-w-4xl font-display text-6xl leading-[1.05] text-mist sm:text-7xl md:text-8xl"
         >
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="font-mono text-xs uppercase tracking-[0.2em] text-stone-strong"
-          >
-            {project.location.line1}, {project.location.line2}
-          </motion.p>
+          Fourteen homes.
+          <br />
+          One hillside.
+        </motion.h1>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-3xl font-display text-5xl leading-[1.1] text-basalt sm:text-6xl md:text-7xl"
-          >
-            Fourteen homes.
-            <br />
-            One hillside.
-          </motion.h1>
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.28 }}
+          className="max-w-xl text-lg leading-relaxed text-mist/80"
+        >
+          A boutique address of 3&nbsp;BHK residences on Baner&rsquo;s high
+          ground — built small on purpose, so every home keeps its view, its
+          quiet, and its distance from the next door.
+        </motion.p>
 
-          <motion.p
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="max-w-lg text-lg leading-relaxed text-basalt/80"
-          >
-            Malhar Serenity is a boutique address of 3 BHK residences on
-            Baner&rsquo;s high ground — built small on purpose, so every
-            home keeps its view, its quiet, and its distance from the next
-            door.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
-            <HeroStats />
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <HeroCTAs />
-          </motion.div>
-
-          <p className="max-w-md text-xs text-stone-strong">{priceDisclaimer}</p>
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.4 }}
+          className="flex flex-col items-center gap-4 pt-2 sm:flex-row"
+        >
+          <MagneticCTA href="#enquiry" variant="brand-accent" size="pill">
+            Enquire Now
+          </MagneticCTA>
+          <MagneticCTA href="/residences" variant="brand-ghost" size="pill">
+            Explore Residences
+          </MagneticCTA>
         </motion.div>
-      </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.52 }}
+          className="pt-6"
+        >
+          <HeroStats />
+        </motion.div>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.7, delay: 0.6 }}
+          className="max-w-md pt-2 text-xs text-mist/50"
+        >
+          {priceDisclaimer}
+        </motion.p>
+      </motion.div>
+
+      <ScrollIndicator opacity={indicatorOpacity} />
     </section>
   );
 }

@@ -11,23 +11,29 @@ const exploreLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
+const legalLinks = [
+  { href: "/privacy", label: "Privacy Policy" },
+  { href: "/terms", label: "Terms of Service" },
+];
+
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border bg-basalt text-mist">
-      <div className="mx-auto grid max-w-6xl gap-10 px-6 py-16 sm:grid-cols-3">
-        <div>
-          <p className="font-display text-lg">{project.name}</p>
-          <p className="mt-3 text-sm text-mist/70">
-            {project.location.line1}
-            <br />
-            {project.location.line2}
+    <footer className="border-t border-mist/10 bg-basalt text-mist">
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-turmeric/40 to-transparent" />
+
+      <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+        <div className="lg:col-span-1">
+          <p className="font-display text-2xl">{project.name}</p>
+          <p className="mt-4 max-w-[220px] text-sm leading-relaxed text-mist/60">
+            A boutique address of fourteen residences on Baner&rsquo;s high
+            ground.
           </p>
-          <p className="mt-3 text-sm text-mist/70">by {project.developer}</p>
+          <p className="mt-6 text-sm text-mist/50">by {project.developer}</p>
         </div>
 
         <div>
-          <p className="text-xs uppercase tracking-wide text-mist/50">Explore</p>
-          <ul className="mt-3 flex flex-col gap-2">
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-mist/55">Explore</p>
+          <ul className="mt-5 flex flex-col gap-3">
             {exploreLinks.map((link) => (
               <li key={link.href}>
                 <Link
@@ -42,8 +48,30 @@ export function SiteFooter() {
         </div>
 
         <div>
-          <p className="text-xs uppercase tracking-wide text-mist/50">Contact</p>
-          <ul className="mt-3 flex flex-col gap-2 text-sm text-mist/70">
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-mist/55">Address</p>
+          <p className="mt-5 text-sm leading-relaxed text-mist/70">
+            {project.location.line1}
+            <br />
+            {project.location.line2}
+          </p>
+          <p className="mt-5 font-mono text-xs uppercase tracking-[0.2em] text-mist/55">Legal</p>
+          <ul className="mt-3 flex flex-col gap-3">
+            {legalLinks.map((link) => (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  className="text-sm text-mist/70 transition-colors hover:text-mist"
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-mist/55">Contact</p>
+          <ul className="mt-5 flex flex-col gap-3 text-sm text-mist/70">
             <li>{contactPlaceholders.phoneDisplay}</li>
             <li>{contactPlaceholders.email}</li>
           </ul>
@@ -54,8 +82,8 @@ export function SiteFooter() {
           into the Contact column as plain gray text. A missing RERA
           number is the one placeholder on this site that must be
           impossible to mistake for real, live content. */}
-      <div className="mx-auto max-w-6xl px-6 pb-10">
-        <div className="flex items-start gap-3 rounded-md border border-turmeric/40 bg-turmeric/10 px-5 py-4">
+      <div className="mx-auto max-w-6xl px-6 pb-12">
+        <div className="flex items-start gap-3 rounded-2xl border border-turmeric/40 bg-turmeric/10 px-5 py-4">
           <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-turmeric" strokeWidth={1.5} aria-hidden="true" />
           <div>
             <p className="font-mono text-sm text-turmeric">
@@ -70,23 +98,13 @@ export function SiteFooter() {
       </div>
 
       <div className="border-t border-mist/10">
-        <div className="mx-auto max-w-6xl px-6 py-6 text-xs leading-relaxed text-mist/50">
+        <div className="mx-auto max-w-6xl px-6 py-8 text-xs leading-relaxed text-mist/55">
           <p>{legalBoilerplate.notAnOffer}</p>
           <p className="mt-2">{legalBoilerplate.verifyIndependently}</p>
           <p className="mt-2">{legalBoilerplate.artisticImpression}</p>
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-            <p>
-              © {new Date().getFullYear()} {project.developer}. All rights reserved.
-            </p>
-            <div className="flex gap-4">
-              <Link href="/privacy" className="underline underline-offset-4 hover:text-mist/80">
-                Privacy Policy
-              </Link>
-              <Link href="/terms" className="underline underline-offset-4 hover:text-mist/80">
-                Terms of Service
-              </Link>
-            </div>
-          </div>
+          <p className="mt-5">
+            © {new Date().getFullYear()} {project.developer}. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>

@@ -2,28 +2,53 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import Image from "next/image";
 import { ImageOff, X, ChevronLeft, ChevronRight } from "lucide-react";
-import { galleryCategories } from "@/content/gallery";
+import { galleryCategories, type GalleryImage } from "@/content/gallery";
 import { Reveal } from "@/components/motion/reveal";
 
-type FlatItem = { category: string; indexInCategory: number; globalIndex: number };
+type FlatItem = {
+  category: string;
+  indexInCategory: number;
+  globalIndex: number;
+  image?: GalleryImage;
+};
 
-const flatItems: FlatItem[] = galleryCategories.flatMap((cat, ci) =>
-  Array.from({ length: cat.slots }, (_, si) => ({
+const flatItems: FlatItem[] = galleryCategories.flatMap((cat, ci) => {
+  const realCount = cat.images?.length ?? 0;
+  const total = realCount + cat.placeholderSlots;
+  const priorCount = galleryCategories
+    .slice(0, ci)
+    .reduce((sum, c) => sum + (c.images?.length ?? 0) + c.placeholderSlots, 0);
+
+  return Array.from({ length: total }, (_, si) => ({
     category: cat.name,
     indexInCategory: si,
-    globalIndex:
-      galleryCategories.slice(0, ci).reduce((sum, c) => sum + c.slots, 0) + si,
-  }))
-);
+    globalIndex: priorCount + si,
+    image: si < realCount ? cat.images![si] : undefined,
+  }));
+});
 
-function PlaceholderTile({
-  item,
-  onOpen,
-}: {
-  item: FlatItem;
-  onOpen: (globalIndex: number) => void;
-}) {
+function GalleryTile({ item, onOpen }: { item: FlatItem; onOpen: (globalIndex: number) => void }) {
+  if (item.image) {
+    return (
+      <button
+        type="button"
+        onClick={() => onOpen(item.globalIndex)}
+        className="group relative aspect-[4/3] overflow-hidden rounded-lg"
+      >
+        <Image
+          src={item.image.src}
+          alt={item.image.alt}
+          fill
+          sizes="(min-width: 640px) 25vw, 50vw"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-basalt/0 transition-colors duration-300 group-hover:bg-basalt/10" />
+      </button>
+    );
+  }
+
   return (
     <button
       type="button"
@@ -110,6 +135,10 @@ export function GalleryGrid() {
   }, [openIndex, closeLightbox, goPrev, goNext]);
 
   const current = openIndex !== null ? flatItems[openIndex] : null;
+  const currentCategoryTotal = current
+    ? (galleryCategories.find((c) => c.name === current.category)?.images?.length ?? 0) +
+      (galleryCategories.find((c) => c.name === current.category)?.placeholderSlots ?? 0)
+    : 0;
 
   return (
     <>
@@ -123,7 +152,7 @@ export function GalleryGrid() {
             <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
               {items.map((item, i) => (
                 <Reveal key={item.globalIndex} delay={i * 0.05}>
-                  <PlaceholderTile item={item} onOpen={openLightbox} />
+                  <GalleryTile item={item} onOpen={openLightbox} />
                 </Reveal>
               ))}
             </div>
@@ -137,12 +166,16 @@ export function GalleryGrid() {
             className="fixed inset-0 z-[100] flex items-center justify-center bg-basalt/90 px-4"
             role="dialog"
             aria-modal="true"
-            aria-label={`${current.category} photo ${current.indexInCategory + 1}, coming soon`}
+            aria-label={
+              current.image
+                ? current.image.alt
+                : `${current.category} photo ${current.indexInCategory + 1}, coming soon`
+            }
             onClick={(e) => {
               if (e.target === e.currentTarget) closeLightbox();
             }}
           >
-            <div ref={dialogRef} className="relative flex w-full max-w-2xl flex-col items-center">
+            <div ref={dialogRef} className="relative flex w-full max-w-3xl flex-col items-center">
               <button
                 ref={closeButtonRef}
                 type="button"
@@ -153,16 +186,28 @@ export function GalleryGrid() {
                 <X className="h-6 w-6" aria-hidden="true" />
               </button>
 
-              <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-mist/30 bg-basalt px-6 text-center">
-                <ImageOff className="h-10 w-10 text-mist/60" strokeWidth={1.5} aria-hidden="true" />
-                <p className="font-sans text-base font-medium text-mist">
-                  Photography coming soon
-                </p>
-                <p className="text-sm text-mist/60">
-                  {current.category} · {current.indexInCategory + 1} of{" "}
-                  {galleryCategories.find((c) => c.name === current.category)?.slots}
-                </p>
-              </div>
+              {current.image ? (
+                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg">
+                  <Image
+                    src={current.image.src}
+                    alt={current.image.alt}
+                    fill
+                    sizes="(min-width: 1024px) 60vw, 90vw"
+                    className="object-cover"
+                    priority
+                  />
+                </div>
+              ) : (
+                <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-mist/30 bg-basalt px-6 text-center">
+                  <ImageOff className="h-10 w-10 text-mist/60" strokeWidth={1.5} aria-hidden="true" />
+                  <p className="font-sans text-base font-medium text-mist">
+                    Photography coming soon
+                  </p>
+                  <p className="text-sm text-mist/60">
+                    {current.category} · {current.indexInCategory + 1} of {currentCategoryTotal}
+                  </p>
+                </div>
+              )}
 
               <div className="mt-4 flex items-center gap-4">
                 <button
