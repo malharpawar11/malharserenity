@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 import { contactPlaceholders } from "@/content/site-config";
 import { Reveal } from "@/components/motion/reveal";
@@ -17,12 +18,16 @@ type EnquiryCTAProps = {
   subhead?: string;
   whatsappMessage?: string;
   showTrustBullets?: boolean;
+  /** When set, shows a tertiary link to the full Contact form (Phase 5),
+   * optionally carrying the current config as a query param. */
+  formHref?: string;
 };
 
 /**
- * Reused on Home (default copy) and Residences (payment-plan framing,
- * WhatsApp message pre-filled with the selected config). The actual form
- * + validation arrives in Phase 5 — until then this is WhatsApp/email only.
+ * Reused on Home (default copy), Residences (payment-plan framing,
+ * WhatsApp message pre-filled with the selected config), and on the
+ * Contact page itself (as the "prefer WhatsApp or email" alternative to
+ * the form).
  */
 export function EnquiryCTA({
   id = "enquiry",
@@ -30,6 +35,7 @@ export function EnquiryCTA({
   subhead = "No pressure, no scripted follow-up calls. Tell us what you want to know — floor plans, payment schedule, site visit timing — and we’ll answer directly.",
   whatsappMessage = "Hi, I'd like to know more about Malhar Serenity.",
   showTrustBullets = true,
+  formHref,
 }: EnquiryCTAProps) {
   return (
     <section id={id} className="mx-auto max-w-2xl px-6 py-24 text-center sm:py-32">
@@ -52,6 +58,17 @@ export function EnquiryCTA({
           Email Us
         </a>
       </Reveal>
+
+      {formHref && (
+        <Reveal delay={0.15} className="mt-4">
+          <Link
+            href={formHref}
+            className="font-sans text-sm text-canopy underline underline-offset-4 hover:text-canopy/80"
+          >
+            Or fill out our enquiry form →
+          </Link>
+        </Reveal>
+      )}
 
       {showTrustBullets && (
         <Reveal delay={0.2}>

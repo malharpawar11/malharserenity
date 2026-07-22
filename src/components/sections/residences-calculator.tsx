@@ -174,6 +174,7 @@ export function ResidencesCalculator() {
         heading="Talk to us about payment plans"
         subhead="Loan structuring, down-payment schedule, possession-linked payments — tell us where you are and we'll walk you through it."
         whatsappMessage={whatsappMessage}
+        formHref={`/contact?config=${configId}`}
         showTrustBullets={false}
       />
     </>

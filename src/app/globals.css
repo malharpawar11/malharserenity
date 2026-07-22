@@ -97,7 +97,11 @@
   --muted-foreground: #696356;
   --accent: var(--turmeric);
   --accent-foreground: var(--basalt);
-  --destructive: oklch(0.577 0.245 27.325);
+  /* shadcn's default destructive red only hit 4.18:1 on Mist (verified via
+     computed-style canvas readback, not just the token's spec value) —
+     under the 4.5:1 AA minimum. Darkened to clear both Mist (5.49:1) and
+     white/card (6.27:1). */
+  --destructive: #c40009;
   --border: #dcd8cb;
   --input: #dcd8cb;
   --ring: var(--canopy);

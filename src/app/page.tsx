@@ -13,7 +13,7 @@ export default function Home() {
       <ResidencesTeaser />
       <AmenitiesTeaser />
       <LocationTeaser />
-      <EnquiryCTA />
+      <EnquiryCTA formHref="/contact" />
     </main>
   );
 }

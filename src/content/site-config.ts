@@ -14,6 +14,11 @@ export const project = {
   developer: "Malhar Developers (AOP)",
   location: {
     line1: "Samarth Colony, Baner",
+    // TODO (dev-facing, unresolved): the ground-truth ground brief states
+    // 411045, but Google's geocoding of "Samarth Colony, Baner, Pune"
+    // (used by the /location map embed, checked during Phase 4 QA)
+    // resolves to 411069. Do not silently pick one — confirm the correct
+    // pincode against the actual sanctioned plot address before launch.
     line2: "Pune – 411045",
     microMarket: "Baner / Balewadi, Pune West",
   },
@@ -104,7 +109,7 @@ export function buildWhatsAppLink(message: string): string | null {
 
 export const legalBoilerplate = {
   notAnOffer:
-    "This website does not constitute an offer, acceptance, contract, or agreement of any kind. All information, images, layouts, and prices are indicative and subject to change without notice.",
+    "This website does not constitute an offer, acceptance, contract, or agreement of any kind. All prices, specifications, amenities, layouts, and other project details shown here are indicative and subject to change without notice.",
   verifyIndependently:
     "Please verify all project details, including RERA registration, sanctioned plans, and pricing, independently or through your legal/financial advisor, and on the official MahaRERA portal (maharera.maharashtra.gov.in) before making any decision.",
   artisticImpression:
