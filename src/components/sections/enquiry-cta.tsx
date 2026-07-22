@@ -3,7 +3,7 @@ import { contactPlaceholders } from "@/content/site-config";
 import { Reveal } from "@/components/motion/reveal";
 import { WhatsAppButton } from "@/components/ui/whatsapp-button";
 
-const trustBullets = [
+const defaultTrustBullets = [
   contactPlaceholders.reraDisclaimerLabel,
   "Site visits by appointment",
   // TODO: confirm this is actually true operationally before publishing —
@@ -11,23 +11,36 @@ const trustBullets = [
   "Direct answers, no call-centre routing",
 ];
 
-export function EnquiryCTA() {
+type EnquiryCTAProps = {
+  id?: string;
+  heading?: string;
+  subhead?: string;
+  whatsappMessage?: string;
+  showTrustBullets?: boolean;
+};
+
+/**
+ * Reused on Home (default copy) and Residences (payment-plan framing,
+ * WhatsApp message pre-filled with the selected config). The actual form
+ * + validation arrives in Phase 5 — until then this is WhatsApp/email only.
+ */
+export function EnquiryCTA({
+  id = "enquiry",
+  heading = "Ask us anything before you decide",
+  subhead = "No pressure, no scripted follow-up calls. Tell us what you want to know — floor plans, payment schedule, site visit timing — and we’ll answer directly.",
+  whatsappMessage = "Hi, I'd like to know more about Malhar Serenity.",
+  showTrustBullets = true,
+}: EnquiryCTAProps) {
   return (
-    <section id="enquiry" className="mx-auto max-w-2xl px-6 py-24 text-center sm:py-32">
+    <section id={id} className="mx-auto max-w-2xl px-6 py-24 text-center sm:py-32">
       <Reveal>
-        <h2 className="font-display text-3xl text-basalt sm:text-4xl">
-          Ask us anything before you decide
-        </h2>
-        <p className="mt-6 text-lg leading-relaxed text-basalt/80">
-          No pressure, no scripted follow-up calls. Tell us what you want to
-          know — floor plans, payment schedule, site visit timing — and
-          we&rsquo;ll answer directly.
-        </p>
+        <h2 className="font-display text-3xl text-basalt sm:text-4xl">{heading}</h2>
+        <p className="mt-6 text-lg leading-relaxed text-basalt/80">{subhead}</p>
       </Reveal>
 
       <Reveal delay={0.1} className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
         <WhatsAppButton
-          message="Hi, I'd like to know more about Malhar Serenity."
+          message={whatsappMessage}
           className="rounded-md bg-canopy px-7 py-3 font-sans text-sm font-medium text-mist transition-colors hover:bg-canopy/90"
         >
           Enquire on WhatsApp
@@ -40,16 +53,18 @@ export function EnquiryCTA() {
         </a>
       </Reveal>
 
-      <Reveal delay={0.2}>
-        <ul className="mt-10 flex flex-col items-center gap-3 text-sm text-basalt/70 sm:flex-row sm:justify-center sm:gap-8">
-          {trustBullets.map((bullet) => (
-            <li key={bullet} className="flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 shrink-0 text-canopy" strokeWidth={1.5} aria-hidden="true" />
-              {bullet}
-            </li>
-          ))}
-        </ul>
-      </Reveal>
+      {showTrustBullets && (
+        <Reveal delay={0.2}>
+          <ul className="mt-10 flex flex-col items-center gap-3 text-sm text-basalt/70 sm:flex-row sm:justify-center sm:gap-8">
+            {defaultTrustBullets.map((bullet) => (
+              <li key={bullet} className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 shrink-0 text-canopy" strokeWidth={1.5} aria-hidden="true" />
+                {bullet}
+              </li>
+            ))}
+          </ul>
+        </Reveal>
+      )}
     </section>
   );
 }

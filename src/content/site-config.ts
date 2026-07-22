@@ -29,6 +29,9 @@ export type UnitConfig = {
   carpetAreaSqFt: number;
   bathrooms: number;
   priceINR: string;
+  /** Numeric rupee value of priceINR, for EMI-calculator arithmetic only —
+   * still the same indicative figure, still carries the same disclaimer. */
+  priceValueINR: number;
   /** Path is a placeholder slot — no real floor plan file exists yet. */
   floorPlanImagePlaceholder: string | null;
   floorPlanPdfPlaceholder: string | null;
@@ -41,6 +44,7 @@ export const unitConfigs: UnitConfig[] = [
     carpetAreaSqFt: 1088,
     bathrooms: 2,
     priceINR: "₹1.40 Cr*",
+    priceValueINR: 14_000_000,
     floorPlanImagePlaceholder: null, // TODO: swap in sanctioned floor plan image
     floorPlanPdfPlaceholder: null, // TODO: swap in sanctioned floor plan PDF
   },
@@ -50,10 +54,23 @@ export const unitConfigs: UnitConfig[] = [
     carpetAreaSqFt: 1215,
     bathrooms: 3,
     priceINR: "₹1.60 Cr*",
+    priceValueINR: 16_000_000,
     floorPlanImagePlaceholder: null,
     floorPlanPdfPlaceholder: null,
   },
 ];
+
+/**
+ * TODO (developer confirmation needed): both configs are described as the
+ * same build/finish spec, differing only in size/bathroom count — not a
+ * different quality tier. Sourced from the Overview draft copy
+ * (src/content/copy/overview.md), which itself flags this as unconfirmed.
+ * Don't drop this disclaimer from the Residences page until it's verified
+ * against the real spec sheet.
+ */
+export const sameSpecClaim =
+  "Both layouts are finished to the same specification — the larger plan adds a third bathroom and floor area, not a different tier of build quality.";
+export const sameSpecClaimNeedsConfirmation = true;
 
 export const priceDisclaimer =
   "Indicative price, subject to change. Not an offer or contract. Please verify all details independently before making a decision.";
