@@ -123,7 +123,10 @@ function ScrollHero() {
   const indicatorOpacity = useTransform(scrollYProgress, (v) => clampedLerp(v, 0, 0.15, 1, 0));
 
   return (
-    <section ref={sceneRef} className="relative min-h-svh overflow-hidden">
+    <section
+      ref={sceneRef}
+      className="relative flex min-h-svh flex-col items-center justify-center overflow-hidden"
+    >
       <motion.div
         className="absolute inset-0"
         style={{ y: imageY }}
@@ -138,7 +141,7 @@ function ScrollHero() {
 
       <motion.div
         style={{ opacity: contentOpacity, y: contentY }}
-        className="relative z-10 flex h-full flex-col items-center justify-center gap-6 px-6 py-28 text-center sm:py-32"
+        className="relative z-10 flex flex-col items-center gap-6 px-6 py-28 text-center sm:py-32"
       >
         <motion.p
           initial={{ opacity: 0, y: 10 }}
