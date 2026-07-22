@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { unitConfigs } from "@/content/site-config";
 import { Reveal } from "@/components/motion/reveal";
 import { EnquiryCTA } from "@/components/sections/enquiry-cta";
@@ -47,6 +47,20 @@ export function ResidencesCalculator() {
   const totalInterest = totalPayable - loanAmount;
 
   const whatsappMessage = `Hi, I'd like to talk about payment plans for the ${selectedConfig.type} (${selectedConfig.carpetAreaSqFt} sq.ft) at Malhar Serenity.`;
+
+  // Debounced screen-reader announcement of the recalculated result — a
+  // slider drag fires onChange on every step, and an aria-live region
+  // updated that often would spam AT users with dozens of announcements
+  // per second instead of one useful summary once they pause.
+  const [announcement, setAnnouncement] = useState("");
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setAnnouncement(
+        `Estimated EMI ${formatINR(emi)} per month, total interest ${formatINR(totalInterest)}, total payable ${formatINR(totalPayable)}.`
+      );
+    }, 600);
+    return () => clearTimeout(timeout);
+  }, [emi, totalInterest, totalPayable]);
 
   return (
     <>
@@ -101,6 +115,7 @@ export function ResidencesCalculator() {
                 max={selectedConfig.priceValueINR}
                 step={100_000}
                 value={loanAmount}
+                aria-valuetext={formatINR(loanAmount)}
                 onChange={(e) => setLoanAmount(Number(e.target.value))}
                 className={`mt-3 ${sliderClass}`}
               />
@@ -120,6 +135,7 @@ export function ResidencesCalculator() {
                 max={14}
                 step={0.05}
                 value={ratePct}
+                aria-valuetext={`${ratePct.toFixed(2)} percent`}
                 onChange={(e) => setRatePct(Number(e.target.value))}
                 className={`mt-3 ${sliderClass}`}
               />
@@ -139,25 +155,32 @@ export function ResidencesCalculator() {
                 max={30}
                 step={1}
                 value={tenureYears}
+                aria-valuetext={`${tenureYears} years`}
                 onChange={(e) => setTenureYears(Number(e.target.value))}
                 className={`mt-3 ${sliderClass}`}
               />
             </div>
           </Reveal>
 
-          <Reveal delay={0.2} className="mt-10 grid grid-cols-1 gap-4 rounded-lg border border-border bg-background p-6 sm:grid-cols-3">
-            <div className="text-center sm:text-left">
-              <dt className="text-xs uppercase tracking-wide text-stone-strong">Monthly EMI</dt>
-              <dd className="mt-1 font-mono text-xl text-turmeric-strong">{formatINR(emi)}</dd>
-            </div>
-            <div className="text-center sm:text-left">
-              <dt className="text-xs uppercase tracking-wide text-stone-strong">Total Interest</dt>
-              <dd className="mt-1 font-mono text-xl text-basalt">{formatINR(totalInterest)}</dd>
-            </div>
-            <div className="text-center sm:text-left">
-              <dt className="text-xs uppercase tracking-wide text-stone-strong">Total Payable</dt>
-              <dd className="mt-1 font-mono text-xl text-basalt">{formatINR(totalPayable)}</dd>
-            </div>
+          <div aria-live="polite" aria-atomic="true" className="sr-only">
+            {announcement}
+          </div>
+
+          <Reveal delay={0.2}>
+            <dl className="mt-10 grid grid-cols-1 gap-4 rounded-lg border border-border bg-background p-6 sm:grid-cols-3">
+              <div className="text-center sm:text-left">
+                <dt className="text-xs uppercase tracking-wide text-stone-strong">Monthly EMI</dt>
+                <dd className="mt-1 font-mono text-xl text-turmeric-strong">{formatINR(emi)}</dd>
+              </div>
+              <div className="text-center sm:text-left">
+                <dt className="text-xs uppercase tracking-wide text-stone-strong">Total Interest</dt>
+                <dd className="mt-1 font-mono text-xl text-basalt">{formatINR(totalInterest)}</dd>
+              </div>
+              <div className="text-center sm:text-left">
+                <dt className="text-xs uppercase tracking-wide text-stone-strong">Total Payable</dt>
+                <dd className="mt-1 font-mono text-xl text-basalt">{formatINR(totalPayable)}</dd>
+              </div>
+            </dl>
           </Reveal>
 
           <Reveal delay={0.25} className="mt-6 rounded-md border border-turmeric/30 bg-turmeric/10 p-4 text-xs leading-relaxed text-basalt/80">

@@ -28,7 +28,7 @@ export function LocationMap() {
         className="h-80 w-full sm:h-96"
       />
       <div className="flex items-center justify-between gap-3 bg-card px-4 py-3">
-        <p className="text-xs text-basalt/60">{address}</p>
+        <p className="text-xs text-basalt/70">{address}</p>
         <a
           href={openInMapsHref}
           target="_blank"

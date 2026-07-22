@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { ImageOff, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { galleryCategories } from "@/content/gallery";
 import { Reveal } from "@/components/motion/reveal";
@@ -130,62 +131,64 @@ export function GalleryGrid() {
         );
       })}
 
-      {current && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-basalt/90 px-4"
-          role="dialog"
-          aria-modal="true"
-          aria-label={`${current.category} photo ${current.indexInCategory + 1}, coming soon`}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) closeLightbox();
-          }}
-        >
-          <div ref={dialogRef} className="relative flex w-full max-w-2xl flex-col items-center">
-            <button
-              ref={closeButtonRef}
-              type="button"
-              onClick={closeLightbox}
-              aria-label="Close"
-              className="absolute -top-14 right-0 flex h-11 w-11 items-center justify-center rounded-full text-mist transition-colors hover:bg-mist/10 sm:top-0 sm:-right-14"
-            >
-              <X className="h-6 w-6" aria-hidden="true" />
-            </button>
-
-            <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-mist/30 bg-basalt px-6 text-center">
-              <ImageOff className="h-10 w-10 text-mist/60" strokeWidth={1.5} aria-hidden="true" />
-              <p className="font-sans text-base font-medium text-mist">
-                Photography coming soon
-              </p>
-              <p className="text-sm text-mist/60">
-                {current.category} · {current.indexInCategory + 1} of{" "}
-                {galleryCategories.find((c) => c.name === current.category)?.slots}
-              </p>
-            </div>
-
-            <div className="mt-4 flex items-center gap-4">
+      {current &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-basalt/90 px-4"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${current.category} photo ${current.indexInCategory + 1}, coming soon`}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) closeLightbox();
+            }}
+          >
+            <div ref={dialogRef} className="relative flex w-full max-w-2xl flex-col items-center">
               <button
+                ref={closeButtonRef}
                 type="button"
-                onClick={goPrev}
-                aria-label="Previous photo"
-                className="flex h-11 w-11 items-center justify-center rounded-full text-mist transition-colors hover:bg-mist/10"
+                onClick={closeLightbox}
+                aria-label="Close"
+                className="absolute -top-14 right-0 flex h-11 w-11 items-center justify-center rounded-full text-mist transition-colors hover:bg-mist/10 sm:top-0 sm:-right-14"
               >
-                <ChevronLeft className="h-6 w-6" aria-hidden="true" />
+                <X className="h-6 w-6" aria-hidden="true" />
               </button>
-              <span className="font-mono text-xs text-mist/60">
-                {openIndex! + 1} / {flatItems.length}
-              </span>
-              <button
-                type="button"
-                onClick={goNext}
-                aria-label="Next photo"
-                className="flex h-11 w-11 items-center justify-center rounded-full text-mist transition-colors hover:bg-mist/10"
-              >
-                <ChevronRight className="h-6 w-6" aria-hidden="true" />
-              </button>
+
+              <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-mist/30 bg-basalt px-6 text-center">
+                <ImageOff className="h-10 w-10 text-mist/60" strokeWidth={1.5} aria-hidden="true" />
+                <p className="font-sans text-base font-medium text-mist">
+                  Photography coming soon
+                </p>
+                <p className="text-sm text-mist/60">
+                  {current.category} · {current.indexInCategory + 1} of{" "}
+                  {galleryCategories.find((c) => c.name === current.category)?.slots}
+                </p>
+              </div>
+
+              <div className="mt-4 flex items-center gap-4">
+                <button
+                  type="button"
+                  onClick={goPrev}
+                  aria-label="Previous photo"
+                  className="flex h-11 w-11 items-center justify-center rounded-full text-mist transition-colors hover:bg-mist/10"
+                >
+                  <ChevronLeft className="h-6 w-6" aria-hidden="true" />
+                </button>
+                <span className="font-mono text-xs text-mist/60">
+                  {openIndex! + 1} / {flatItems.length}
+                </span>
+                <button
+                  type="button"
+                  onClick={goNext}
+                  aria-label="Next photo"
+                  className="flex h-11 w-11 items-center justify-center rounded-full text-mist transition-colors hover:bg-mist/10"
+                >
+                  <ChevronRight className="h-6 w-6" aria-hidden="true" />
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </>
   );
 }

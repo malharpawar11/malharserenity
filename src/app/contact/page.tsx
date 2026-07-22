@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { ContactForm } from "@/components/sections/contact-form";
+import { ContactFormSkeleton } from "@/components/sections/contact-form-skeleton";
 import { EnquiryCTA } from "@/components/sections/enquiry-cta";
 
 export const metadata: Metadata = {
@@ -29,7 +30,7 @@ export default function ContactPage() {
       </section>
 
       <section className="px-6 pb-24">
-        <Suspense fallback={null}>
+        <Suspense fallback={<ContactFormSkeleton />}>
           <ContactForm />
         </Suspense>
       </section>
