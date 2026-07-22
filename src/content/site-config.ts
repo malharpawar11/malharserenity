@@ -119,6 +119,26 @@ export const legalBoilerplate = {
 export const verifiedGeoFacts = {
   banerHillElevationFt: 2224,
   banerHillRank: "3rd-highest point within Pune city limits",
+  baneHinjewadiDistanceKm: "~8 km",
   baneHinjewadiDriveTime: "15–20 min normal traffic, 30–40 min peak",
-  baneShivajinagarDriveTime: "approx. 15–20 min, traffic-dependent (sources vary)",
+  baneShivajinagarDistanceKm: "8–15 km (sources vary)",
+  connectivityRoads: [
+    "Baner Road",
+    "Baner-Pashan Link Road",
+    "Aundh-Baner Link Road",
+  ],
+} as const;
+
+/**
+ * Aggregator-sourced, not independently verified by us — label explicitly
+ * as "commonly cited" wherever these render, never as confirmed fact.
+ */
+export const commonlyCitedLandmarks = {
+  schools: [
+    "DAV Public School",
+    "Orchid School",
+    "CM International School",
+    "Bharati Vidyapeeth School",
+  ],
+  hospitals: ["Jupiter Hospital", "Manipal Hospital"],
 } as const;
