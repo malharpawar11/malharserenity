@@ -21,6 +21,15 @@
   --color-turmeric: var(--turmeric);
   --color-dusk: var(--dusk);
 
+  /* Text-safe darkened variants — stone/turmeric fail WCAG AA (4.5:1) as
+     text directly on the Mist/white background (verified: 2.21:1 and
+     1.97:1 respectively). Use these `-strong` variants for text on light
+     surfaces; the originals remain correct for text on dark (Basalt)
+     surfaces and for decorative/non-text use (borders, illustration
+     fills), where they already pass. */
+  --color-stone-strong: var(--stone-strong);
+  --color-turmeric-strong: var(--turmeric-strong);
+
   --font-sans: var(--font-sans);
   --font-display: var(--font-display);
   --font-mono: var(--font-mono);
@@ -71,6 +80,8 @@
   --stone: #a9a392;
   --turmeric: #d9a441;
   --dusk: #3a3350;
+  --stone-strong: #6d695e;
+  --turmeric-strong: #7e6330;
 
   --background: var(--mist);
   --foreground: var(--basalt);
@@ -83,7 +94,7 @@
   --secondary: #e4e1d6;
   --secondary-foreground: var(--basalt);
   --muted: #e4e1d6;
-  --muted-foreground: #7c7566;
+  --muted-foreground: #696356;
   --accent: var(--turmeric);
   --accent-foreground: var(--basalt);
   --destructive: oklch(0.577 0.245 27.325);
@@ -138,6 +149,13 @@
   --sidebar-accent-foreground: var(--mist);
   --sidebar-border: rgb(238 241 234 / 12%);
   --sidebar-ring: var(--stone);
+
+  /* On a dark surface the vivid originals already clear 4.5:1 (verified:
+     stone 6.26:1, turmeric 7.01:1 on Basalt) — unlike the light-mode
+     `-strong` variants above, which are darkened specifically for text on
+     the light Mist/white surface and would fail contrast here. */
+  --stone-strong: var(--stone);
+  --turmeric-strong: var(--turmeric);
 }
 
 @layer base {

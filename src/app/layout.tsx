@@ -21,8 +21,16 @@ export default function RootLayout({
       className={`${generalSans.variable} ${fraunces.variable} ${plexMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-md focus:bg-canopy focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-mist"
+        >
+          Skip to main content
+        </a>
         <SiteHeader />
-        <div className="flex flex-1 flex-col">{children}</div>
+        <div id="main-content" className="flex flex-1 flex-col">
+          {children}
+        </div>
         <SiteFooter />
       </body>
     </html>

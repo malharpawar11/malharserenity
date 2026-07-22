@@ -92,7 +92,7 @@ export function HeroElevation() {
             initial={reduceMotion ? undefined : { opacity: 0, y: 10 }}
             animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="font-mono text-xs uppercase tracking-[0.2em] text-stone"
+            className="font-mono text-xs uppercase tracking-[0.2em] text-stone-strong"
           >
             {project.location.line1}, {project.location.line2}
           </motion.p>
@@ -128,12 +128,12 @@ export function HeroElevation() {
           >
             {stats.map((stat) => (
               <div key={stat.label} className="flex flex-col items-center">
-                <dt className="text-[10px] uppercase tracking-wide text-stone">
+                <dt className="text-[10px] uppercase tracking-wide text-stone-strong">
                   {stat.label}
                 </dt>
                 <dd
                   className={`font-mono text-base ${
-                    stat.accent ? "text-turmeric" : "text-canopy"
+                    stat.accent ? "text-turmeric-strong" : "text-canopy"
                   }`}
                 >
                   {stat.value}
@@ -164,7 +164,7 @@ export function HeroElevation() {
             </button>
           </motion.div>
 
-          <p className="max-w-md text-xs text-stone">{priceDisclaimer}</p>
+          <p className="max-w-md text-xs text-stone-strong">{priceDisclaimer}</p>
         </motion.div>
       </div>
     </section>

@@ -41,7 +41,7 @@ export function ResidencesTeaser() {
               <tr>
                 <td className="px-5 py-4 text-basalt/70">Starting at</td>
                 {unitConfigs.map((unit) => (
-                  <td key={unit.id} className="px-5 py-4 text-turmeric">
+                  <td key={unit.id} className="px-5 py-4 text-turmeric-strong">
                     {unit.priceINR}
                   </td>
                 ))}
@@ -50,7 +50,7 @@ export function ResidencesTeaser() {
           </table>
         </Reveal>
 
-        <Reveal delay={0.15} className="mt-4 text-center text-xs text-stone">
+        <Reveal delay={0.15} className="mt-4 text-center text-xs text-stone-strong">
           {priceDisclaimer}
         </Reveal>
 

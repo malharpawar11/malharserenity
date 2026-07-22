@@ -63,6 +63,16 @@ exposed as Tailwind utilities — `bg-canopy`, `text-turmeric`, etc.):
 | Turmeric | `#D9A441` | Sparse accent — CTAs, key numerals only |
 | Dusk | `#3A3350` | Occasional deep blue-violet, gradient overlays |
 
+**Text-safe variants — `text-stone-strong` / `text-turmeric-strong`.**
+Stone and Turmeric fail WCAG AA as text directly on the Mist/white
+surface (verified: 2.21:1 and 1.97:1 — both well under the 4.5:1
+minimum). Use the base `stone`/`turmeric` tokens for text on the dark
+Basalt surface (footer, location teaser — both already pass 6–7:1) and
+for decorative/non-text use (borders, illustration fills). Use the
+`-strong` variants for stone/turmeric text anywhere the background is
+light (Mist or white/card) — they're darkened toward Basalt just enough
+to clear 4.5:1 while keeping the same warm character.
+
 Type system (3 roles — don't introduce a 4th typeface):
 
 1. **`font-display`** (Fraunces, variable, `opsz`+`SOFT` axes) — hero

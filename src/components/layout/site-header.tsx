@@ -44,7 +44,7 @@ export function SiteHeader() {
 
         <button
           type="button"
-          className="text-basalt md:hidden"
+          className="-m-2.5 p-2.5 text-basalt md:hidden"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-label={open ? "Close menu" : "Open menu"}

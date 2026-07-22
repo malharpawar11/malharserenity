@@ -23,7 +23,7 @@ export function AmenitiesTeaser() {
         <h2 className="font-display text-3xl text-basalt sm:text-4xl">
           Everything a home this size actually needs
         </h2>
-        <p className="mt-4 text-sm text-stone">
+        <p className="mt-4 text-sm text-stone-strong">
           Draft list, pending developer confirmation against the sanctioned plan.
         </p>
       </Reveal>
