@@ -103,10 +103,10 @@ function ScrollIndicator({ opacity }: { opacity: MotionValue<number> }) {
  */
 function StaticHero() {
   return (
-    <section className="relative flex min-h-svh flex-col justify-end overflow-hidden">
+    <section className="relative flex min-h-svh flex-col justify-center overflow-hidden">
       <Image src={HERO_IMAGE} alt={HERO_IMAGE_ALT} fill priority sizes="100vw" className="object-cover" />
       <div className="absolute inset-0 bg-gradient-to-t from-basalt via-basalt/70 to-basalt/25" />
-      <div className="relative z-10 flex flex-col items-center gap-6 px-6 pt-28 pb-20 text-center sm:pt-40 sm:pb-28">
+      <div className="relative z-10 flex flex-col items-center gap-6 px-6 py-28 text-center sm:py-32">
         <HeroCopy />
       </div>
     </section>
@@ -138,7 +138,7 @@ function ScrollHero() {
 
       <motion.div
         style={{ opacity: contentOpacity, y: contentY }}
-        className="relative z-10 flex h-full flex-col items-center justify-end gap-6 px-6 pt-28 pb-20 text-center sm:pt-40 sm:pb-28"
+        className="relative z-10 flex h-full flex-col items-center justify-center gap-6 px-6 py-28 text-center sm:py-32"
       >
         <motion.p
           initial={{ opacity: 0, y: 10 }}

@@ -19,8 +19,8 @@ export function ArchitecturalBand() {
     <section ref={ref} className="relative h-[60vh] w-full overflow-hidden sm:h-[75vh]">
       {reduceMotion ? (
         <Image
-          src="/images/serenity-exterior-dusk.jpg"
-          alt="Malhar Serenity, full facade view at dusk"
+          src="/images/serenity-exterior-day.jpg"
+          alt="Malhar Serenity, full facade view in daylight"
           fill
           sizes="100vw"
           className="object-cover"
@@ -28,8 +28,8 @@ export function ArchitecturalBand() {
       ) : (
         <motion.div style={{ y }} className="absolute inset-0 scale-110">
           <Image
-            src="/images/serenity-exterior-dusk.jpg"
-            alt="Malhar Serenity, full facade view at dusk"
+            src="/images/serenity-exterior-day.jpg"
+            alt="Malhar Serenity, full facade view in daylight"
             fill
             sizes="100vw"
             className="object-cover"
