@@ -1,0 +1,107 @@
+/**
+ * Single source of truth for project facts.
+ *
+ * Two kinds of values live here:
+ *  1. VERIFIED facts from the ground-truth brief — safe to render as-is.
+ *  2. PLACEHOLDER values — structurally wired in but must not be treated as
+ *     real. Each is typed `| null` and named `...Placeholder` or carries a
+ *     TODO comment. Do not invent a value to fill these; swap them for real
+ *     developer-supplied data before launch.
+ */
+
+export const project = {
+  name: "Malhar Serenity",
+  developer: "Malhar Developers (AOP)",
+  location: {
+    line1: "Samarth Colony, Baner",
+    line2: "Pune – 411045",
+    microMarket: "Baner / Balewadi, Pune West",
+  },
+  status: "Under construction",
+  possession: "December 2026",
+  plotSizeAcres: 0.12,
+  totalUnits: 14,
+} as const;
+
+export type UnitConfig = {
+  id: string;
+  type: string;
+  carpetAreaSqFt: number;
+  bathrooms: number;
+  priceINR: string;
+  /** Path is a placeholder slot — no real floor plan file exists yet. */
+  floorPlanImagePlaceholder: string | null;
+  floorPlanPdfPlaceholder: string | null;
+};
+
+export const unitConfigs: UnitConfig[] = [
+  {
+    id: "3bhk-1088",
+    type: "3 BHK",
+    carpetAreaSqFt: 1088,
+    bathrooms: 2,
+    priceINR: "₹1.40 Cr*",
+    floorPlanImagePlaceholder: null, // TODO: swap in sanctioned floor plan image
+    floorPlanPdfPlaceholder: null, // TODO: swap in sanctioned floor plan PDF
+  },
+  {
+    id: "3bhk-1215",
+    type: "3 BHK",
+    carpetAreaSqFt: 1215,
+    bathrooms: 3,
+    priceINR: "₹1.60 Cr*",
+    floorPlanImagePlaceholder: null,
+    floorPlanPdfPlaceholder: null,
+  },
+];
+
+export const priceDisclaimer =
+  "Indicative price, subject to change. Not an offer or contract. Please verify all details independently before making a decision.";
+
+/**
+ * Contact & legal placeholders. None of these are real — every value here
+ * is either null (nothing to invent) or a structurally-valid but obviously
+ * fake placeholder so components can render without conditional-guarding
+ * every field. Replace all of these before launch.
+ */
+export const contactPlaceholders = {
+  // TODO: insert real MahaRERA registration number once available.
+  reraNumber: null as string | null,
+  reraDisclaimerLabel: "RERA No: [PENDING — insert MahaRERA registration number]",
+  // TODO: insert real enquiry phone number.
+  phoneDisplay: "[PENDING — phone number]",
+  phoneHref: null as string | null, // e.g. "tel:+91XXXXXXXXXX"
+  // TODO: insert real WhatsApp business number (with country code, no symbols).
+  whatsappNumber: null as string | null, // e.g. "91XXXXXXXXXX"
+  // TODO: insert real enquiry email.
+  email: "[PENDING — email address]",
+  // TODO: insert real brochure PDF and remove the placeholder gate in the UI.
+  brochurePdfPlaceholder: null as string | null,
+} as const;
+
+export function buildWhatsAppLink(message: string): string | null {
+  if (!contactPlaceholders.whatsappNumber) return null;
+  const encoded = encodeURIComponent(message);
+  return `https://wa.me/${contactPlaceholders.whatsappNumber}?text=${encoded}`;
+}
+
+export const legalBoilerplate = {
+  notAnOffer:
+    "This website does not constitute an offer, acceptance, contract, or agreement of any kind. All information, images, layouts, and prices are indicative and subject to change without notice.",
+  verifyIndependently:
+    "Please verify all project details, including RERA registration, sanctioned plans, and pricing, independently or through your legal/financial advisor, and on the official MahaRERA portal (maharera.maharashtra.gov.in) before making any decision.",
+  artisticImpression:
+    "Images and renders on this site are artistic impressions and may not reflect the actual product, specifications, or finishes.",
+} as const;
+
+/**
+ * Geo facts verified during Phase 0 research. Anything not listed here
+ * (e.g. an exact distance to the Baner-Pashan Biodiversity Park) could not
+ * be independently verified and must stay unquantified in copy.
+ */
+export const verifiedGeoFacts = {
+  banerHillElevationFt: 2224,
+  banerHillRank: "3rd-highest point within Pune city limits",
+  baneHinjewadiDriveTime: "15–20 min normal traffic, 30–40 min peak",
+  baneShivajinagarDriveTime: "approx. 15–20 min, traffic-dependent (sources vary)",
+} as const;
