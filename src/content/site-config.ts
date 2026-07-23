@@ -147,3 +147,68 @@ export const commonlyCitedLandmarks = {
   ],
   hospitals: ["Jupiter Hospital", "Manipal Hospital"],
 } as const;
+
+export function buildDirectionsUrl(): string {
+  const address = `${project.location.line1}, ${project.location.line2}`;
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
+}
+
+/**
+ * Commute destinations for the /location page's travel cards. Only
+ * Hinjewadi and Shivajinagar have a verified distance/time (from
+ * verifiedGeoFacts above) — the rest are real, commonly-referenced
+ * destinations in Pune West but we have no verified distance/drive-time
+ * for them, so those fields stay `null` and must render as "pending",
+ * never a guessed number.
+ */
+export type CommuteDestination = {
+  label: string;
+  distanceKm: string | null;
+  driveTime: string | null;
+};
+
+export const commuteDestinations: CommuteDestination[] = [
+  {
+    label: "Hinjewadi IT Park",
+    distanceKm: verifiedGeoFacts.baneHinjewadiDistanceKm,
+    driveTime: verifiedGeoFacts.baneHinjewadiDriveTime,
+  },
+  {
+    label: "Shivajinagar",
+    distanceKm: verifiedGeoFacts.baneShivajinagarDistanceKm,
+    driveTime: null,
+  },
+  { label: "Balewadi High Street", distanceKm: null, driveTime: null },
+  { label: "Mumbai–Pune Expressway", distanceKm: null, driveTime: null },
+  { label: "Pune University", distanceKm: null, driveTime: null },
+  { label: "Pune Airport", distanceKm: null, driveTime: null },
+];
+
+/**
+ * Categorized nearby-places data for the /location page's neighbourhood
+ * guide. Schools/Hospitals reuse the same aggregator-sourced list above
+ * (not independently verified). IT Parks is derived from verifiedGeoFacts,
+ * so it's the one category safe to label as verified. Shopping & Dining
+ * and Entertainment have no sourced list at all yet — `items: null` means
+ * "not yet compiled," rendered as an honest placeholder, not an empty
+ * category or a guessed list.
+ */
+export type NearbyCategory = {
+  category: string;
+  items: string[] | null;
+  verified: boolean;
+};
+
+export const nearbyCategories: NearbyCategory[] = [
+  { category: "Schools", items: [...commonlyCitedLandmarks.schools], verified: false },
+  { category: "Hospitals", items: [...commonlyCitedLandmarks.hospitals], verified: false },
+  {
+    category: "IT Parks",
+    items: [
+      `Hinjewadi IT Park — ${verifiedGeoFacts.baneHinjewadiDistanceKm}, ${verifiedGeoFacts.baneHinjewadiDriveTime}`,
+    ],
+    verified: true,
+  },
+  { category: "Shopping & Dining", items: null, verified: false },
+  { category: "Entertainment", items: null, verified: false },
+];

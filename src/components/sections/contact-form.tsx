@@ -2,22 +2,22 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle2 } from "lucide-react";
+import { motion } from "motion/react";
+import { CheckCircle2, User, Phone, Mail, Building2, MessageSquare } from "lucide-react";
 import { enquirySchema, type EnquiryFormValues } from "@/lib/validation/enquiry-schema";
 import { unitConfigs, contactPlaceholders } from "@/content/site-config";
-import { Reveal } from "@/components/motion/reveal";
+import { FloatingInput } from "@/components/ui/floating-input";
+import { FloatingTextarea } from "@/components/ui/floating-textarea";
+import { PremiumButton } from "@/components/ui/premium-button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const configOptions: { value: EnquiryFormValues["configInterest"]; label: string }[] = [
   { value: unitConfigs[0].id as "3bhk-1088", label: `${unitConfigs[0].type} · ${unitConfigs[0].carpetAreaSqFt} sq.ft` },
   { value: unitConfigs[1].id as "3bhk-1215", label: `${unitConfigs[1].type} · ${unitConfigs[1].carpetAreaSqFt} sq.ft` },
   { value: "unsure", label: "Not sure yet" },
 ];
-
-const fieldClass =
-  "min-h-11 w-full rounded-md border border-border bg-card px-4 py-2.5 font-sans text-sm text-basalt " +
-  "placeholder:text-stone-strong focus:border-canopy focus:outline-none focus:ring-2 focus:ring-canopy/40";
 
 function buildMailtoHref(values: EnquiryFormValues) {
   const configLabel = configOptions.find((c) => c.value === values.configInterest)?.label ?? "Not sure yet";
@@ -48,6 +48,7 @@ export function ContactForm() {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<EnquiryFormValues>({
     resolver: zodResolver(enquirySchema),
@@ -71,117 +72,116 @@ export function ContactForm() {
 
   if (submitted) {
     return (
-      <Reveal className="mx-auto max-w-md rounded-lg border border-canopy/30 bg-canopy/5 p-8 text-center">
-        <CheckCircle2 className="mx-auto h-10 w-10 text-canopy" strokeWidth={1.5} aria-hidden="true" />
-        <h3 className="mt-4 font-display text-2xl text-basalt">Opening your email client</h3>
-        <p className="mt-3 text-sm leading-relaxed text-basalt/80">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="flex flex-col items-center gap-4 rounded-3xl border border-canopy/20 bg-canopy/5 p-9 text-center"
+      >
+        <motion.span
+          initial={{ scale: 0.6, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-canopy/10"
+        >
+          <CheckCircle2 className="h-7 w-7 text-canopy" strokeWidth={1.5} aria-hidden="true" />
+        </motion.span>
+        <h3 className="font-display text-2xl text-basalt">Opening your email client</h3>
+        <p className="max-w-sm text-sm leading-relaxed text-basalt/75">
           We&rsquo;ve pre-filled an email to us with your details, {submitted.name.split(" ")[0]}.
           If your email app didn&rsquo;t open, write to us directly at{" "}
           <a href={`mailto:${contactPlaceholders.email}`} className="text-canopy underline underline-offset-4">
             {contactPlaceholders.email}
           </a>{" "}
-          or message us on WhatsApp below.
+          or message us on WhatsApp.
         </p>
-      </Reveal>
+      </motion.div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="mx-auto flex max-w-md flex-col gap-5">
-      <div>
-        <label htmlFor="name" className="text-sm font-medium text-basalt">
-          Name
-        </label>
-        <input id="name" type="text" autoComplete="name" className={`mt-2 ${fieldClass}`} {...register("name")} />
-        {errors.name && (
-          <p role="alert" className="mt-1.5 text-xs text-destructive">
-            {errors.name.message}
-          </p>
-        )}
-      </div>
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5">
+      <FloatingInput
+        id="name"
+        label="Name"
+        icon={User}
+        autoComplete="name"
+        error={errors.name?.message}
+        {...register("name")}
+      />
+
+      <FloatingInput
+        id="phone"
+        label="Phone"
+        type="tel"
+        inputMode="tel"
+        autoComplete="tel"
+        icon={Phone}
+        error={errors.phone?.message}
+        {...register("phone")}
+      />
+
+      <FloatingInput
+        id="email"
+        label="Email"
+        type="email"
+        inputMode="email"
+        autoComplete="email"
+        icon={Mail}
+        error={errors.email?.message}
+        {...register("email")}
+      />
 
       <div>
-        <label htmlFor="phone" className="text-sm font-medium text-basalt">
-          Phone
-        </label>
-        <input
-          id="phone"
-          type="tel"
-          inputMode="tel"
-          autoComplete="tel"
-          placeholder="98765 43210"
-          className={`mt-2 ${fieldClass}`}
-          {...register("phone")}
+        <Controller
+          control={control}
+          name="configInterest"
+          render={({ field }) => (
+            <Select value={field.value} onValueChange={field.onChange}>
+              <SelectTrigger
+                id="configInterest"
+                aria-label="Configuration"
+                className="relative rounded-2xl border border-basalt/12 bg-card/70 py-6 pr-4 pl-11 text-left backdrop-blur-sm data-[state=open]:border-canopy data-[state=open]:shadow-[0_0_0_4px_rgba(40,64,47,0.12)]"
+              >
+                <Building2
+                  className="pointer-events-none absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-stone-strong"
+                  strokeWidth={1.5}
+                  aria-hidden="true"
+                />
+                <span className="flex flex-col items-start">
+                  <span className="text-xs text-stone-strong">Configuration</span>
+                  <SelectValue />
+                </span>
+              </SelectTrigger>
+              <SelectContent>
+                {configOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         />
-        {errors.phone && (
-          <p role="alert" className="mt-1.5 text-xs text-destructive">
-            {errors.phone.message}
-          </p>
-        )}
-      </div>
-
-      <div>
-        <label htmlFor="email" className="text-sm font-medium text-basalt">
-          Email
-        </label>
-        <input
-          id="email"
-          type="email"
-          inputMode="email"
-          autoComplete="email"
-          className={`mt-2 ${fieldClass}`}
-          {...register("email")}
-        />
-        {errors.email && (
-          <p role="alert" className="mt-1.5 text-xs text-destructive">
-            {errors.email.message}
-          </p>
-        )}
-      </div>
-
-      <div>
-        <label htmlFor="configInterest" className="text-sm font-medium text-basalt">
-          Configuration
-        </label>
-        <select id="configInterest" className={`mt-2 ${fieldClass}`} {...register("configInterest")}>
-          {configOptions.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
         {errors.configInterest && (
-          <p role="alert" className="mt-1.5 text-xs text-destructive">
+          <p role="alert" className="mt-1.5 pl-1 text-xs text-destructive">
             {errors.configInterest.message}
           </p>
         )}
       </div>
 
-      <div>
-        <label htmlFor="message" className="text-sm font-medium text-basalt">
-          Message
-        </label>
-        <textarea
-          id="message"
-          rows={4}
-          placeholder="Floor plans, payment schedule, site visit timing — whatever you want to know."
-          className={`mt-2 ${fieldClass} min-h-28`}
-          {...register("message")}
-        />
-        {errors.message && (
-          <p role="alert" className="mt-1.5 text-xs text-destructive">
-            {errors.message.message}
-          </p>
-        )}
-      </div>
+      <FloatingTextarea
+        id="message"
+        label="Message"
+        icon={MessageSquare}
+        rows={4}
+        error={errors.message?.message}
+        {...register("message")}
+      />
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="mt-2 flex min-h-11 items-center justify-center rounded-md bg-canopy px-6 py-3 font-sans text-sm font-medium text-mist transition-colors hover:bg-canopy/90 disabled:opacity-60"
-      >
+      <PremiumButton loading={isSubmitting} className="mt-2">
         Send Enquiry
-      </button>
+      </PremiumButton>
     </form>
   );
 }
